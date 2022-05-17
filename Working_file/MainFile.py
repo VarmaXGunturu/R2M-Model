@@ -30,6 +30,9 @@ char_time_stop = 4   #charging stop time
 capacity_battery = [3000,2000,1000,3000] #batter's capacity_battery, Wh 
 
 "————————————————————————————————————————————"
+
+char_time_start = char_time_start + 1 # make the charging data start to appear on the next hour of start time
+
 "The number of components have to match the number of customers"
 pv_allocation = pd.read_csv(r'..\Input_Data\PV_split\Pv_split.csv')
 pv_allocation = pv_allocation.iloc[:,1:]

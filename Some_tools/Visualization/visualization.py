@@ -221,3 +221,90 @@ plt.ylabel("Battery status Wh")
 plt.legend(loc=2)
 plt.savefig(string+'.png')
 plt.close()
+
+
+'''Hourly-wise data'''
+
+
+def get_hour_wise(data):
+    hourly_con, hourly_gen, hourly_pow, hourly_sur = [], [], [], []
+    for hour in range(1, 25):
+        hourly_df = data[data['time_day'] == hour]
+        hourly_con.append(hourly_df['consumption'].mean())
+        hourly_gen.append(hourly_df['generation_pv'].mean())
+        hourly_pow.append(hourly_df['use_power_grid1'].mean())
+        hourly_sur.append(hourly_df['surplus'].mean())
+
+    # change the order
+    hourly_con = [hourly_con[-1]] + hourly_con[:-1]
+    hourly_gen = [hourly_gen[-1]] + hourly_gen[:-1]
+    hourly_pow = [hourly_pow[-1]] + hourly_pow[:-1]
+    hourly_sur = [hourly_sur[-1]] + hourly_sur[:-1]
+
+    return hourly_con, hourly_gen, hourly_pow, hourly_sur
+
+
+def plot_hour_wise(hourly_con, hourly_gen, hourly_pow, month_idx):
+    x = range(24)
+    plt.plot(x, hourly_con, label='Customer usage')
+    plt.plot(x, hourly_gen, label='PV')
+    plt.plot(x, hourly_pow, label='Grid consumption')
+    plt.xlabel("hour of day/h")
+    plt.ylabel("Energy Consumption/Wh")
+    plt.legend(loc=1)
+    plt.ylim(ymin=0)
+    plt.xlim(xmin=0)
+    plt.title(f'Average hourly data in Month {month_idx}')
+    plt.savefig(f'hourly_of_month{month_idx}.png')
+    plt.close()
+
+
+HOURS = 24
+MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+"hourly wise data with battery"
+
+for m, _ in enumerate(MONTH_DAYS):
+    if m == 0:
+        st, ed = m, HOURS * MONTH_DAYS[m]
+    else:
+        st, ed = np.sum(MONTH_DAYS[:m]) * HOURS, np.sum(MONTH_DAYS[:m + 1]) * HOURS
+    monthly_data = data[st:ed]
+    hourly_con, hourly_gen, hourly_pow, hourly_sur = get_hour_wise(monthly_data)
+    plot_hour_wise(hourly_con, hourly_gen, hourly_pow, m + 1)
+
+
+
+"hourly wise data without battery"
+grid_con = []
+
+
+def plot_hour_wise_nobat(hourly_con, hourly_gen, grid_con, month_idx):
+    x = range(24)
+    plt.plot(x, hourly_con, label='Customer usage')
+    plt.plot(x, hourly_gen, label='PV')
+    plt.plot(x, grid_con, label='Grid consumption')
+    plt.xlabel("hour of day/h")
+    plt.ylabel("Energy Consumption/Wh")
+    plt.legend(loc=1)
+    plt.ylim(ymin=0)
+    plt.xlim(xmin=0)
+    plt.title(f'Average hourly data in Month {month_idx}')
+    plt.savefig(f'NB hourly_of_month{month_idx}.png')
+    plt.close()
+
+
+for m, _ in enumerate(MONTH_DAYS):
+    if m == 0:
+        st, ed = m, HOURS * MONTH_DAYS[m]
+    else:
+        st, ed = np.sum(MONTH_DAYS[:m]) * HOURS, np.sum(MONTH_DAYS[:m + 1]) * HOURS
+    monthly_data = data[st:ed]
+    hourly_con, hourly_gen, hourly_pow, hourly_sur = get_hour_wise(monthly_data)
+    # grid_con = hourly_con - hourly_gen + hourly_sur
+    grid_con = list(np.array(hourly_con) - np.array(hourly_gen) + np.array(hourly_sur))
+    plot_hour_wise_nobat(hourly_con, hourly_gen, grid_con, m + 1)
+
+all_hourly_con, all_hourly_gen, all_hourly_pow, all_hourly_sur = get_hour_wise(data)
+all_grid_con =list(np.array(all_hourly_con) - np.array(all_hourly_gen) + np.array(all_hourly_sur))
+plot_hour_wise(all_hourly_con, all_hourly_gen, all_grid_con, 'all')
