@@ -89,10 +89,10 @@ pv_energy_terms = 0.12, # EUR/KWh , Power purchase agreement
 User_input = input("Are you a self-consumer [Yes/No]: ")  # Answer "Yes" or "No"
 
 if User_input == "Yes":
-    from sc_OSX import *
+    from sc import *
 
 elif User_input == "No":
-    from not_sc_OSX import *
+    from not_sc import *
 
 else:
     print("Please Answer with Yes or No")

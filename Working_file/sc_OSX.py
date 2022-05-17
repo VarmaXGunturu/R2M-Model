@@ -17,7 +17,6 @@ if user == "Business":
     cons_np = np.array(cons_p)/1000
     tot_energy = np.sum(cons_np * Energy_term_3)/12
     tot_power = np.sum(Power_term_3 * Billed_power_3)* 30
-    print("Energy Consumption per month in MWh : ","{:.2f}".format(np.sum(cons_np)/12))
     pv_energy_terms = 0.12
     pv_ppa = np.sum(r6)*pv_energy_terms/(12*1000)
     R2M = 6*10    # Euro / month
@@ -34,15 +33,12 @@ elif user == "Residential" or user == "Homeowner":
     cons_np = np.array(cons_p)/1000
     tot_energy = np.sum(cons_np * Energy_term_2)/(12*19)+1  # for each household
     tot_power = (2/3)*(Power_term_2[0] * Billed_power_2[0])* 30 + (1/3)*(Power_term_2[1] * Billed_power_2[1])*30
-    print("Energy Consumption per month in KWh : ", "{:.2f}".format(np.sum(cons_np)/12))
     pv_energy_terms = 0.12
     pv_ppa = np.sum(r6)*pv_energy_terms/(12*1000*19)
     R2M = 2    # Euro / month
 else:
     print("Please enter a valid customer type")
 
-print("Invoiced Energy per month in Euro : ","{:.2f}".format(tot_energy))
-print("Invoiced Power per month in Euro : ","{:.2f}".format(tot_power))
 
 tax_electricity = 0.051127
 meter_rent  = 0.81*30     # in Euro per month
@@ -54,10 +50,31 @@ tot = (tot_energy + tot_power) * (1 + tax_electricity)
 bef_iva = tot+R2M+em_service+meter_rent+pv_ppa
 tot_inv = bef_iva * (1 + IVA)
 
-print("Invoice after Electricity tax: ", "{:.2f}".format(tot))
-print("PV-PPA Without Electricity tax: ","{:.2f}".format(pv_ppa))
-print("Metered Equipment rental: in Euro ","{:.2f}".format(meter_rent))
-print("Electrical emergency service in Eur : ","{:.2f}".format(em_service))
-print("R2M compensation : ","{:.2f}".format(R2M))
-print("Invoice before IVA: " ,"{:.2f}".format(bef_iva))
-print("Total Invoice in Euros: ", "{:.2f}".format(tot_inv))
+
+## String Variables
+
+monthly_energy = str(round(np.sum(cons_np)/12 , 2))
+tot_energy = str(round(tot_energy, 2))
+tot_power = str(round(tot_power, 2))
+tot = str(round(tot, 2))
+pv_ppa = str(round(pv_ppa, 2))
+meter_rent = str(round(meter_rent, 2))
+em_service = str(round(em_service, 2))
+R2M = str(round(R2M, 2))
+bef_iva = str(round(bef_iva, 2))
+tot_inv = str(round(tot_inv, 2))
+
+
+file = open("Energy_Bill_with_sc.txt", "w")
+file.write("Energy Consumption per month in MWh : " + monthly_energy + "\n")
+file.write("Invoiced Energy per month in Euro : " + tot_energy + "\n")
+file.write("Invoiced Power per month in Euro : " + tot_power + "\n")
+file.write("Invoice after Electricity tax: " + tot + "\n")
+file.write("PV-PPA Without Electricity tax:" + pv_ppa + "\n")
+file.write("Metered Equipment rental: in Euro " + meter_rent + "\n")
+file.write("Electrical emergency service in Eur : " + em_service + "\n")
+file.write("R2M compensation : " + R2M + "\n")
+file.write("Invoice before IVA: " + bef_iva + "\n")
+file.write("Total Invoice in Euros: " + tot_inv + "\n")
+
+file.close()

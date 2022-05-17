@@ -30,7 +30,7 @@ capacity_battery = [3000,2000,1000,3000] #batter's capacity_battery, Wh
 
 "————————————————————————————————————————————"
 "The number of components have to match the number of customers"
-pv_allocation = pd.read_csv(r'..\Input_Data\PV_split\Pv_split.csv')
+pv_allocation = pd.read_csv(r'../Input_Data/PV_split/Pv_split.csv')
 
 "The parameters you do not need to change"
 n_coustomer = number_customers() # number of customers, depend on number of consumptions files you upload
